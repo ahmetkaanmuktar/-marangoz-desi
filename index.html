@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marangoz Desi Hesaplama</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Marangoz desi hesaplama uygulaması - Çap × Çap × 785 × Uzunluk formülü ile hesaplama">
+    <meta name="theme-color" content="#8B4513">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Marangoz Desi">
+    <meta name="msapplication-TileColor" content="#8B4513">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .calculator {
+            padding: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #8B4513;
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .hesapla-btn, .agac-ekle-btn {
+            flex: 1;
+            padding: 18px;
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .agac-ekle-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .agac-ekle-btn:not(:disabled) {
+            background: linear-gradient(135deg, #228B22 0%, #32CD32 100%);
+        }
+
+        .hesapla-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 69, 19, 0.3);
+        }
+
+        .hesapla-btn:active {
+            transform: translateY(0);
+        }
+
+        .sonuc {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #8B4513;
+        }
+
+        .sonuc h3 {
+            color: #8B4513;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .sonuc p {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .formul {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .formul small {
+            color: #666;
+            font-style: italic;
+        }
+
+        .ornek {
+            background: #e8f5e8;
+            padding: 25px 40px;
+            border-top: 1px solid #ddd;
+        }
+
+        .ornek h4 {
+            color: #2d5a2d;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .ornek p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .ornek strong {
+            color: #8B4513;
+            font-size: 1.1em;
+        }
+
+        /* Ağaç Listesi Stilleri */
+        .agac-listesi {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f0f8f0;
+            border-radius: 15px;
+            border-left: 5px solid #228B22;
+        }
+
+        .agac-listesi h3 {
+            color: #228B22;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .agac-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .agac-info {
+            flex: 1;
+        }
+
+        .agac-info strong {
+            color: #8B4513;
+            font-size: 1.1em;
+        }
+
+        .agac-info small {
+            color: #666;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .sil-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .sil-btn:hover {
+            background: #c0392b;
+        }
+
+        .bos-liste {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .toplam-sonuc {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .toplam-sonuc h4 {
+            color: #228B22;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .toplam-sonuc span {
+            color: #8B4513;
+            font-weight: bold;
+        }
+
+        .toplam-butonlar {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .toplam-hesapla-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .toplam-hesapla-btn:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #1f5f99 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .temizle-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .temizle-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .calculator, .ornek {
+                padding: 25px;
+            }
+        }
+
+        /* Animasyon efektleri */
+        .calculator {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sonuc {
+            transition: all 0.3s ease;
+        }
+
+        .sonuc.updated {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🪵 Marangoz Desi Hesaplama</h1>
+            <p>Çap × Çap × 785 × Uzunluk formülü ile hesaplama</p>
+        </header>
+
+        <div class="calculator">
+            <div class="input-group">
+                <label for="cap">Çap (cm):</label>
+                <input type="number" id="cap" placeholder="Örn: 30" min="0" step="0.1">
+            </div>
+
+            <div class="input-group">
+                <label for="uzunluk">Uzunluk (metre):</label>
+                <input type="number" id="uzunluk" placeholder="Örn: 2" min="0" step="0.1">
+            </div>
+
+            <div class="button-group">
+                <button onclick="hesapla()" class="hesapla-btn">Hesapla</button>
+                <button onclick="agacaEkle()" class="agac-ekle-btn" id="agac-ekle-btn" disabled>Ağaca Ekle</button>
+            </div>
+
+            <div class="sonuc" id="sonuc">
+                <h3>Sonuç:</h3>
+                <p id="sonuc-text">Hesaplama için değerleri girin</p>
+                <div class="formul">
+                    <small>Formül: Çap × Çap × 785 × Uzunluk</small>
+                </div>
+            </div>
+
+            <div class="agac-listesi" id="agac-listesi">
+                <h3>🌳 Ağaç Listesi</h3>
+                <div id="agac-items">
+                    <p class="bos-liste">Henüz ağaç eklenmedi</p>
+                </div>
+                <div class="toplam-sonuc" id="toplam-sonuc">
+                    <h4>Toplam Desi: <span id="toplam-deger">0 mm³</span></h4>
+                    <div class="toplam-butonlar">
+                        <button onclick="toplamHesapla()" class="toplam-hesapla-btn">Toplam Hesapla</button>
+                        <button onclick="listeTemizle()" class="temizle-btn">Listeyi Temizle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ornek">
+            <h4>Örnek Hesaplama:</h4>
+            <p>30 cm çap, 2 metre uzunluk:<br>
+            30 × 30 × 785 × 2 = <strong>1,413,000 mm³</strong></p>
+        </div>
+    </div>
+
+    <script>
+        // Ağaç listesi için global değişken
+        let agacListesi = [];
+        let sonHesaplama = null;
+
+        function hesapla() {
+            console.log('Hesapla fonksiyonu çalıştı'); // Debug için
+            
+            // Input değerlerini al
+            const cap = parseFloat(document.getElementById('cap').value);
+            const uzunluk = parseFloat(document.getElementById('uzunluk').value);
+            
+            // Sonuç elementlerini al
+            const sonucDiv = document.getElementById('sonuc');
+            const sonucText = document.getElementById('sonuc-text');
+            const agacEkleBtn = document.getElementById('agac-ekle-btn');
+            
+            // Değer kontrolü
+            if (isNaN(cap) || isNaN(uzunluk) || cap <= 0 || uzunluk <= 0) {
+                sonucText.innerHTML = '<span style="color: #e74c3c;">⚠️ Lütfen geçerli değerler girin!</span>';
+                sonucDiv.classList.remove('updated');
+                agacEkleBtn.disabled = true;
+                sonHesaplama = null;
+                return;
+            }
+            
+            // Hesaplama: Çap × Çap × 785 × Uzunluk
+            const sabitSayi = 785;
+            const sonuc = cap * cap * sabitSayi * uzunluk;
+            
+            // Sonucu kaydet
+            sonHesaplama = {
+                cap: cap,
+                uzunluk: uzunluk,
+                sonuc: sonuc
+            };
+            
+            // Sonucu formatla
+            const formatlıSonuc = sonuc.toLocaleString('tr-TR');
+            
+            // Hesaplama detaylarını göster
+            const hesaplamaDetay = `
+                <strong style="color: #8B4513; font-size: 1.3em;">${formatlıSonuc} mm³</strong><br>
+                <small style="color: #666; margin-top: 10px; display: block;">
+                    Hesaplama: ${cap} × ${cap} × ${sabitSayi} × ${uzunluk} = ${formatlıSonuc}
+                </small>
+            `;
+            
+            sonucText.innerHTML = hesaplamaDetay;
+            
+            // Ağaca ekle butonunu aktif et
+            agacEkleBtn.disabled = false;
+            
+            // Animasyon efekti
+            sonucDiv.classList.add('updated');
+            setTimeout(() => {
+                sonucDiv.classList.remove('updated');
+            }, 500);
+        }
+
+        function agacaEkle() {
+            if (!sonHesaplama) {
+                alert('Önce bir hesaplama yapın!');
+                return;
+            }
+            
+            // Ağacı listeye ekle
+            const agacNo = agacListesi.length + 1;
+            const yeniAgac = {
+                id: Date.now(), // Benzersiz ID
+                no: agacNo,
+                cap: sonHesaplama.cap,
+                uzunluk: sonHesaplama.uzunluk,
+                desi: sonHesaplama.sonuc
+            };
+            
+            agacListesi.push(yeniAgac);
+            
+            // Listeyi güncelle
+            agacListesiniGuncelle();
+            
+            // Input alanlarını temizle
+            document.getElementById('cap').value = '';
+            document.getElementById('uzunluk').value = '';
+            document.getElementById('sonuc-text').innerHTML = 'Hesaplama için değerleri girin';
+            document.getElementById('agac-ekle-btn').disabled = true;
+            sonHesaplama = null;
+            
+            // Başarı mesajı
+            showNotification('Ağaç başarıyla eklendi! 🌳');
+        }
+
+        function agacListesiniGuncelle() {
+            const agacItems = document.getElementById('agac-items');
+            
+            if (agacListesi.length === 0) {
+                agacItems.innerHTML = '<p class="bos-liste">Henüz ağaç eklenmedi</p>';
+                document.getElementById('toplam-deger').textContent = '0 mm³';
+                return;
+            }
+            
+            // Liste HTML'ini oluştur
+            let listHTML = '';
+            let toplam = 0;
+            
+            agacListesi.forEach(agac => {
+                toplam += agac.desi;
+                const formatlıDesi = agac.desi.toLocaleString('tr-TR');
+                
+                listHTML += `
+                    <div class="agac-item">
+                        <div class="agac-info">
+                            <strong>Ağaç ${agac.no}: ${formatlıDesi} mm³</strong>
+                            <small>Çap: ${agac.cap}cm, Uzunluk: ${agac.uzunluk}m</small>
+                        </div>
+                        <button onclick="agacSil(${agac.id})" class="sil-btn">Sil</button>
+                    </div>
+                `;
+            });
+            
+            agacItems.innerHTML = listHTML;
+            
+            // Toplam desiyi güncelle
+            const toplamFormatli = toplam.toLocaleString('tr-TR');
+            document.getElementById('toplam-deger').textContent = toplamFormatli + ' mm³';
+        }
+
+        function agacSil(id) {
+            // Ağacı listeden çıkar
+            agacListesi = agacListesi.filter(agac => agac.id !== id);
+            
+            // Numaraları yeniden düzenle
+            agacListesi.forEach((agac, index) => {
+                agac.no = index + 1;
+            });
+            
+            // Listeyi güncelle
+            agacListesiniGuncelle();
+            
+            showNotification('Ağaç silindi! 🗑️');
+        }
+
+        function toplamHesapla() {
+            if (agacListesi.length === 0) {
+                alert('Hesaplanacak ağaç yok!');
+                return;
+            }
+            
+            let toplam = 0;
+            let detaylar = '';
+            
+            agacListesi.forEach((agac, index) => {
+                toplam += agac.desi;
+                const formatlıDesi = agac.desi.toLocaleString('tr-TR');
+                detaylar += `Ağaç ${agac.no}: ${formatlıDesi} mm³\n`;
+            });
+            
+            const toplamFormatli = toplam.toLocaleString('tr-TR');
+            
+            // Detaylı sonuç göster
+            const mesaj = `🌳 TOPLAM DESİ HESAPLAMA\n\n${detaylar}\n` +
+                         `📊 TOPLAM: ${toplamFormatli} mm³\n` +
+                         `📈 Ağaç Sayısı: ${agacListesi.length} adet`;
+            
+            alert(mesaj);
+            
+            // Başarı bildirimi
+            showNotification(`Toplam: ${toplamFormatli} mm³ 📊`);
+            
+            // Toplam değeri vurgula
+            const toplamElement = document.getElementById('toplam-deger');
+            toplamElement.style.animation = 'none';
+            setTimeout(() => {
+                toplamElement.style.animation = 'pulse 0.8s ease-in-out';
+            }, 10);
+        }
+
+        function listeTemizle() {
+            if (agacListesi.length === 0) {
+                alert('Liste zaten boş!');
+                return;
+            }
+            
+            if (confirm('Tüm ağaçları silmek istediğinizden emin misiniz?')) {
+                agacListesi = [];
+                agacListesiniGuncelle();
+                showNotification('Liste temizlendi! 🧹');
+            }
+        }
+
+        function showNotification(message) {
+            // Basit bildirim göster
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: bold;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // 3 saniye sonra kaldır
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Enter tuşu ile hesaplama
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        hesapla();
+                    }
+                });
+            });
+            
+            console.log('Sayfa yüklendi, event listener\'lar eklendi');
+            
+            // Service Worker kaydı
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker kayıtlı:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker kayıt hatası:', error);
+                    });
+            }
+        });
+    </script>
+</body>
+</html> 

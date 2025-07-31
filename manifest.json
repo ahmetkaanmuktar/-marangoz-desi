@@ -1,0 +1,26 @@
+{
+  "name": "Marangoz Desi Hesaplama",
+  "short_name": "Marangoz Desi",
+  "description": "Marangoz desi hesaplama uygulaması - Çap × Çap × 785 × Uzunluk formülü ile hesaplama",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#8B4513",
+  "orientation": "portrait",
+  "categories": ["utilities", "productivity"],
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
